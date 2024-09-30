@@ -1,48 +1,15 @@
-const http = require('http')
-const { readFileSync } = require('fs')
+const express = require('express')
+const app = express()
+const people = require('./routes/people')
+const auth = require('./routes/auth')
 
-// PATH
-const homePage = readFileSync('./navbar-app/index.html')
-const homeStyle = readFileSync('./navbar-app/styles.css')
-const homeImage = readFileSync('./navbar-app/logo.svg')
-const homeLogic = readFileSync('./navbar-app/browser-app.js')
+app.use(express.static('./methods-public'))
+// Parse form data
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
+app.use('/api/people', people)
+app.use('/login', auth)
 
-http.createServer((req, res) => {
-  const url = req.url
-  // home page
-  if (url === '/') {
-    res.writeHead(200, { 'content-type': 'text/html' })
-    res.write(homePage)
-    res.end()
-  }
-  // About
-  else if (url === '/about') {
-    res.writeHead(200, { 'content-type': 'text/html' })
-    res.write('<h2>This is about page</h2>')
-    res.end()
-  }
-  // Style
-  else if (url === '/styles.css') {
-    res.writeHead(200, { 'content-type': 'text/css' })
-    res.write(homeStyle)
-    res.end()
-  }
-  // Logo
-  else if (url === '/logo.svg') {
-    res.writeHead(200, { 'content-type': 'image/svg+xml' })
-    res.write(homeImage)
-    res.end()
-  }
-  // Logic
-  else if (url === '/browser-app.js') {
-    res.writeHead(200, { 'content-type': 'text/javascript' })
-    res.write(homeLogic)
-    res.end()
-  }
-  // 404
-  else {
-    res.writeHead(404, { 'content-type': 'text/html' })
-    res.write('<h2>Page not found</h2>')
-    res.end()
-  }
-}).listen(5000)
+app.listen(5000, () => {
+  console.log('Server is listening on port 5000...')
+})
